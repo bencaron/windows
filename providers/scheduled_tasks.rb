@@ -24,59 +24,57 @@
 require 'chef/mixin/shell_out'
 include Chef::Mixin::ShellOut
 
+#FIXME: there is no attempt at being idempotent whatsoever
 action :create do 
-
-  #FIXME: there is no attempt at being idempotent whatsoever
-
   #schtasks /create /sc hourly /mo 5 /sd 03/01/2002 /tn "My App" /tr c:\apps\myapp.exe
   #    /F
   #Specifies to create the task and suppress warnings if the specified task already exists.
 
-    create_cmd = %Q(schtasks /create /sc #{@new_resource.frequency} /mo #{@new_resource.every} 
+  create_cmd = %Q(schtasks /create /sc #{@new_resource.frequency} /mo #{@new_resource.every} 
              /tn "#{@new_resource.name}" /tr "#{@new_resource.command}"
              /ru #{@new_resource.user} /F ).gsub( /\n/, " ")
 
 
-    # Set day/month
-    unless @new_resource.day == "all"
-      create_cmd  << " /d #{@new_resource.day} "
-    end
+  # Set day/month
+  unless @new_resource.day == "all"
+    create_cmd  << " /d #{@new_resource.day} "
+  end
 
-    unless @new_resource.month == "all"
-      create_cmd  << " /m #{@new_resource.month} "
-    end
-    # Specify start time/date
-    unless @new_resource.start_time == "now"
-      create_cmd  << " /st #{@new_resource.start_time} "
-    end
-    unless @new_resource.start_date == "now"
-      create_cmd  << " /sd #{@new_resource.start_date} "
-    end
-    
-    # Maxduration
-    unless @new_resource.max_duration == "forever"
-      create_cmd  << " /du #{@new_resource.max_duration} "
-    end
-    unless @new_resource.kill_after == "forever"
-      create_cmd  << " /k /du #{@new_resource.kill_after} "
-    end
+  unless @new_resource.month == "all"
+    create_cmd  << " /m #{@new_resource.month} "
+  end
+  # Specify start time/date
+  unless @new_resource.start_time == "now"
+    create_cmd  << " /st #{@new_resource.start_time} "
+  end
+  unless @new_resource.start_date == "now"
+    create_cmd  << " /sd #{@new_resource.start_date} "
+  end
 
-    Chef::Log.info("Creating scheduled task #{@new_resource.name} every #{@new_resource.every } #{@new_resource.frequency} ")
-    Chef::Log.debug("cmd=\n#{create_cmd}")
-    shell_out!(create_cmd)
+  # Maxduration
+  unless @new_resource.max_duration == "forever"
+    create_cmd  << " /du #{@new_resource.max_duration} "
+  end
+  unless @new_resource.kill_after == "forever"
+    create_cmd  << " /k /du #{@new_resource.kill_after} "
+  end
 
-    # UNTESTED!
-    #    unless @new_resource.working_directory == "none"
-    #      dump_path = Chef::Config[:file_cache_path] + "/tmp-sched-task-dump.xml"
-    #      dump_cmd = "schedtask /query /xml /tn #{@new_resource.name} > #{dump_path}"
-    #
-    #      shell_out!(dump_cmd)
-    #
-    #      insert_working_directory(@new_resource.working_directory, dump_path)
-    #
-    #      reload_cmd =  "schedtask /create /tn #{@new_resource.name} /xml #{dump_path} /F"
-    #      shell_out!(reload_cmd)
-    #    end
+  Chef::Log.info("Creating scheduled task #{@new_resource.name} every #{@new_resource.every } #{@new_resource.frequency} ")
+  Chef::Log.debug("cmd=\n#{create_cmd}")
+  shell_out!(create_cmd)
+
+  # UNTESTED!
+  #    unless @new_resource.working_directory == "none"
+  #      dump_path = Chef::Config[:file_cache_path] + "/tmp-sched-task-dump.xml"
+  #      dump_cmd = "schedtask /query /xml /tn #{@new_resource.name} > #{dump_path}"
+  #
+  #      shell_out!(dump_cmd)
+  #
+  #      insert_working_directory(@new_resource.working_directory, dump_path)
+  #
+  #      reload_cmd =  "schedtask /create /tn #{@new_resource.name} /xml #{dump_path} /F"
+  #      shell_out!(reload_cmd)
+  #    end
 end
 
 

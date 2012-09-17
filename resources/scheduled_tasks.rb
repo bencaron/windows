@@ -19,22 +19,12 @@
 #
 
 
-#def initialize(name,run_context=nil)
-#  super
-#  @action = :create
-#end
-#
-
 actions :create, :delete
 
 attribute :name, :kind_of => String, :name_attribute => true
-#optional
-attribute :task_name, :kind_of => [ String ]
-
-#required (/w defaults)
 attribute :command, :kind_of => [ String ]
-
 attribute :frequency, :kind_of => [ String ], :equal_to => %w(minute hourly daily weekly monthly)
+
 # Run every X units
 attribute :every, :kind_of => [ Integer ], :default => 1
 
@@ -60,7 +50,6 @@ attribute :kill_after  ,  :kind_of => [ String ], :default => "forever", :regex 
 # Carefull: setting this force us to play a stupid game of create-dump-mods-load because schedtask.exe lack an option
 # to specify a workig directory...
 #attribute :working_directory , :kind_of => [ String ], :default => "none", :equal_to => "DO NOT USE NOT TESTED"
-
 
 # User credentials
 attribute :user, :kind_of => [ String ]
