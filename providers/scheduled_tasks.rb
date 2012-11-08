@@ -32,7 +32,7 @@ action :create do
 
   create_cmd = %Q(schtasks /create /sc #{@new_resource.frequency} /mo #{@new_resource.every} 
              /tn "#{@new_resource.name}" /tr "#{@new_resource.command}"
-             /ru #{@new_resource.user} /F ).gsub( /\n/, " ")
+             /ru #{@new_resource.user} /rp #{@new_resource.password} /F ).gsub( /\n/, " ")
 
 
   # Set day/month
